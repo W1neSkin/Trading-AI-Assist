@@ -1,259 +1,212 @@
 <Window x:Class="TradingAiAssist.Admin.WPF.Views.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:views="clr-namespace:TradingAiAssist.Admin.WPF.Views"
-        Title="Trading AI Assist - Admin Dashboard" 
-        Height="900" Width="1400"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:local="clr-namespace:TradingAiAssist.Admin.WPF.Views"
+        mc:Ignorable="d" 
+        Title="Trading AI Assist Admin" Height="900" Width="1400"
         WindowStartupLocation="CenterScreen"
-        MinHeight="600" MinWidth="1000"
-        Background="{DynamicResource MaterialDesignPaper}"
-        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        FontFamily="{DynamicResource MaterialDesignFont}">
-
+        Background="#F5F5F5">
+    
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <!-- Navigation Button Style -->
+        <Style x:Key="NavigationButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#333"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Padding" Value="20,15"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Margin" Value="0,2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8" 
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                              VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#E3F2FD"/>
+                                <Setter Property="Foreground" Value="#1976D2"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#BBDEFB"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Header Button Style -->
+        <Style x:Key="HeaderButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#666"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4" 
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F0F0F0"/>
+                                <Setter Property="Foreground" Value="#333"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </Window.Resources>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
-        <!-- Top App Bar -->
-        <materialDesign:ColorZone Grid.Row="0" Mode="PrimaryMid" Padding="16" materialDesign:ElevationAssist.Elevation="Dp4">
+        <!-- Navigation Menu -->
+        <Border Grid.Column="0" 
+                Background="White" 
+                Width="{Binding IsMenuExpanded, Converter={StaticResource BooleanToWidthConverter}, ConverterParameter=280,50}"
+                Effect="{StaticResource ShadowEffect}">
+            
             <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <!-- Menu Toggle Button -->
-                <Button Grid.Column="0" 
-                        Style="{DynamicResource MaterialDesignIconButton}"
-                        Command="{Binding ToggleMenuCommand}"
-                        ToolTip="Toggle Menu">
-                    <materialDesign:PackIcon Kind="Menu" />
-                </Button>
+                <!-- Header -->
+                <Border Grid.Row="0" Background="#2196F3" Padding="20,15">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                <!-- Title -->
-                <TextBlock Grid.Column="1" 
-                           Text="Trading AI Assist - Admin Dashboard"
-                           Style="{DynamicResource MaterialDesignHeadline6TextBlock}"
-                           VerticalAlignment="Center"
-                           Margin="16,0,0,0"/>
+                        <StackPanel Grid.Column="0" Visibility="{Binding IsMenuExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="Trading AI Assist" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                            <TextBlock Text="Admin Portal" FontSize="12" Foreground="#E3F2FD" Margin="0,2,0,0"/>
+                        </StackPanel>
 
-                <!-- User Info and Actions -->
-                <StackPanel Grid.Column="2" 
-                            Orientation="Horizontal" 
-                            VerticalAlignment="Center">
-                    
-                    <!-- Notifications -->
-                    <Button Style="{DynamicResource MaterialDesignIconButton}"
-                            Command="{Binding ShowNotificationsCommand}"
-                            ToolTip="Notifications">
-                        <materialDesign:PackIcon Kind="Bell" />
-                        <Button.Badge>
-                            <TextBlock Text="{Binding NotificationCount}" 
-                                       Foreground="White" 
-                                       FontSize="10"/>
-                        </Button.Badge>
-                    </Button>
+                        <Button Grid.Column="1" 
+                                Command="{Binding ToggleMenuCommand}"
+                                Style="{StaticResource HeaderButtonStyle}"
+                                Foreground="White">
+                            <TextBlock Text="☰" FontSize="20"/>
+                        </Button>
+                    </Grid>
+                </Border>
 
-                    <!-- User Menu -->
-                    <Button Style="{DynamicResource MaterialDesignIconButton}"
-                            Command="{Binding ShowUserMenuCommand}"
-                            ToolTip="User Menu">
-                        <materialDesign:PackIcon Kind="Account" />
-                    </Button>
-
-                    <!-- Logout -->
-                    <Button Style="{DynamicResource MaterialDesignIconButton}"
-                            Command="{Binding LogoutCommand}"
-                            ToolTip="Logout">
-                        <materialDesign:PackIcon Kind="Logout" />
-                    </Button>
-                </StackPanel>
-            </Grid>
-        </materialDesign:ColorZone>
-
-        <!-- Main Content -->
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <!-- Navigation Drawer -->
-            <materialDesign:DrawerHost Grid.Column="0" 
-                                       IsLeftDrawerOpen="{Binding IsMenuOpen}"
-                                       LeftDrawerCornerRadius="0 8 8 0">
-                <materialDesign:DrawerHost.LeftDrawerContent>
-                    <StackPanel Width="280" Background="{DynamicResource MaterialDesignPaper}">
+                <!-- Navigation Items -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="10,20">
+                        <Button Content="📊 Dashboard" 
+                                Command="{Binding NavigateToDashboardCommand}"
+                                Style="{StaticResource NavigationButtonStyle}"/>
                         
-                        <!-- User Profile Section -->
-                        <Border Background="{DynamicResource MaterialDesignDivider}" 
-                                Padding="16" 
-                                Margin="0,0,0,8">
-                            <StackPanel>
-                                <materialDesign:PackIcon Kind="AccountCircle" 
-                                                         Width="48" 
-                                                         Height="48" 
-                                                         HorizontalAlignment="Center"
-                                                         Foreground="{DynamicResource MaterialDesignPrimary}"/>
-                                <TextBlock Text="{Binding CurrentUser.DisplayName}" 
-                                           Style="{DynamicResource MaterialDesignSubtitle1TextBlock}"
-                                           HorizontalAlignment="Center"
-                                           Margin="0,8,0,0"/>
-                                <TextBlock Text="{Binding CurrentUser.Email}" 
-                                           Style="{DynamicResource MaterialDesignCaptionTextBlock}"
-                                           HorizontalAlignment="Center"
-                                           Foreground="{DynamicResource MaterialDesignBodyLight}"/>
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Navigation Menu -->
-                        <ScrollViewer VerticalScrollBarVisibility="Auto">
-                            <StackPanel Margin="8">
-                                
-                                <!-- Dashboard -->
-                                <Button Style="{DynamicResource MaterialDesignFlatButton}"
-                                        Command="{Binding NavigateCommand}"
-                                        CommandParameter="Dashboard"
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
-                                        Padding="16,12">
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="ViewDashboard" 
-                                                                 Margin="0,0,16,0"/>
-                                        <TextBlock Text="Dashboard" 
-                                                   VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </Button>
-
-                                <!-- User Management -->
-                                <Button Style="{DynamicResource MaterialDesignFlatButton}"
-                                        Command="{Binding NavigateCommand}"
-                                        CommandParameter="UserManagement"
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
-                                        Padding="16,12">
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="AccountGroup" 
-                                                                 Margin="0,0,16,0"/>
-                                        <TextBlock Text="User Management" 
-                                                   VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </Button>
-
-                                <!-- AI Analytics -->
-                                <Button Style="{DynamicResource MaterialDesignFlatButton}"
-                                        Command="{Binding NavigateCommand}"
-                                        CommandParameter="AiAnalytics"
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
-                                        Padding="16,12">
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="Brain" 
-                                                                 Margin="0,0,16,0"/>
-                                        <TextBlock Text="AI Analytics" 
-                                                   VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </Button>
-
-                                <!-- System Health -->
-                                <Button Style="{DynamicResource MaterialDesignFlatButton}"
-                                        Command="{Binding NavigateCommand}"
-                                        CommandParameter="SystemHealth"
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
-                                        Padding="16,12">
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="MonitorDashboard" 
-                                                                 Margin="0,0,16,0"/>
-                                        <TextBlock Text="System Health" 
-                                                   VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </Button>
-
-                                <!-- Settings -->
-                                <Button Style="{DynamicResource MaterialDesignFlatButton}"
-                                        Command="{Binding NavigateCommand}"
-                                        CommandParameter="Settings"
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
-                                        Padding="16,12">
-                                    <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="Settings" 
-                                                                 Margin="0,0,16,0"/>
-                                        <TextBlock Text="Settings" 
-                                                   VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </Button>
-
-                            </StackPanel>
-                        </ScrollViewer>
+                        <Button Content="👥 User Management" 
+                                Command="{Binding NavigateToUsersCommand}"
+                                Style="{StaticResource NavigationButtonStyle}"/>
+                        
+                        <Button Content="📈 AI Analytics" 
+                                Command="{Binding NavigateToAnalyticsCommand}"
+                                Style="{StaticResource NavigationButtonStyle}"/>
+                        
+                        <Button Content="⚡ System Health" 
+                                Command="{Binding NavigateToHealthCommand}"
+                                Style="{StaticResource NavigationButtonStyle}"/>
+                        
+                        <Button Content="⚙️ Settings" 
+                                Command="{Binding NavigateToSettingsCommand}"
+                                Style="{StaticResource NavigationButtonStyle}"/>
                     </StackPanel>
-                </materialDesign:DrawerHost.LeftDrawerContent>
+                </ScrollViewer>
 
-                <!-- Main Content Area -->
-                <Grid Grid.Column="1">
-                    <ContentControl Content="{Binding CurrentView}" />
-                </Grid>
-
-            </materialDesign:DrawerHost>
-        </Grid>
-
-        <!-- Status Bar -->
-        <materialDesign:ColorZone Grid.Row="2" 
-                                   Mode="PrimaryLight" 
-                                   Padding="8,4" 
-                                   materialDesign:ElevationAssist.Elevation="Dp2">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <!-- Status Message -->
-                <TextBlock Grid.Column="0" 
-                           Text="{Binding StatusMessage}" 
-                           Style="{DynamicResource MaterialDesignCaptionTextBlock}"
-                           VerticalAlignment="Center"/>
-
-                <!-- Connection Status -->
-                <StackPanel Grid.Column="1" 
-                            Orientation="Horizontal" 
-                            VerticalAlignment="Center">
-                    <materialDesign:PackIcon Kind="Wifi" 
-                                             Width="16" 
-                                             Height="16"
-                                             Foreground="{Binding IsConnected, Converter={StaticResource ConnectionStatusConverter}}"/>
-                    <TextBlock Text="{Binding ConnectionStatus}" 
-                               Style="{DynamicResource MaterialDesignCaptionTextBlock}"
-                               Margin="4,0,0,0"/>
-                </StackPanel>
+                <!-- Footer -->
+                <Border Grid.Row="2" Background="#F5F5F5" Padding="15" Visibility="{Binding IsMenuExpanded, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel>
+                        <TextBlock Text="Version 1.0.0" FontSize="11" Foreground="#666" HorizontalAlignment="Center"/>
+                        <TextBlock Text="© 2024 Trading AI Assist" FontSize="11" Foreground="#666" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
             </Grid>
-        </materialDesign:ColorZone>
+        </Border>
 
-        <!-- Loading Overlay -->
-        <Grid Grid.RowSpan="3" 
-              Style="{StaticResource LoadingOverlayStyle}"
-              Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}">
-            <StackPanel HorizontalAlignment="Center" 
-                        VerticalAlignment="Center">
-                <ProgressBar IsIndeterminate="True" 
-                             Width="100" 
-                             Height="4" 
-                             Margin="0,0,0,16"/>
-                <TextBlock Text="Loading..." 
-                           Style="{DynamicResource MaterialDesignBody1TextBlock}"
-                           HorizontalAlignment="Center"/>
-            </StackPanel>
+        <!-- Main Content Area -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Top Bar -->
+            <Border Grid.Row="0" Background="White" Padding="20,15" Effect="{StaticResource ShadowEffect}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Breadcrumb and Title -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content="← Back" 
+                                Command="{Binding GoBackCommand}"
+                                Style="{StaticResource HeaderButtonStyle}"
+                                Visibility="{Binding CanGoBack, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Margin="0,0,15,0"/>
+                        
+                        <TextBlock Text="{Binding CurrentViewModel.Title}" 
+                                   FontSize="20" FontWeight="Bold" 
+                                   Foreground="#333" VerticalAlignment="Center"/>
+                    </StackPanel>
+
+                    <!-- User Info -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <TextBlock Text="👤 Admin User" FontSize="14" Foreground="#666" VerticalAlignment="Center"/>
+                        <Button Content="🔔" Style="{StaticResource HeaderButtonStyle}" Margin="10,0,0,0"/>
+                        <Button Content="👤" Style="{StaticResource HeaderButtonStyle}"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Content Area -->
+            <Border Grid.Row="1" Background="Transparent" Margin="20">
+                <ContentControl Content="{Binding CurrentViewModel}">
+                    <ContentControl.Resources>
+                        <!-- View Templates -->
+                        <DataTemplate DataType="{x:Type local:DashboardView}">
+                            <local:DashboardView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type local:UserManagementView}">
+                            <local:UserManagementView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type local:AiAnalyticsView}">
+                            <local:AiAnalyticsView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type local:SystemHealthView}">
+                            <local:SystemHealthView/>
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type local:SettingsView}">
+                            <local:SettingsView/>
+                        </DataTemplate>
+                    </ContentControl.Resources>
+                </ContentControl>
+            </Border>
         </Grid>
-
     </Grid>
 </Window> 

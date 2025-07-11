@@ -9,6 +9,7 @@ using TradingAiAssist.Admin.AzureAd.Services;
 using TradingAiAssist.Admin.Data.Services;
 using TradingAiAssist.Admin.WPF.ViewModels;
 using TradingAiAssist.Admin.WPF.Views;
+using TradingAiAssist.Admin.WPF.Services;
 
 namespace TradingAiAssist.Admin.WPF
 {
@@ -18,6 +19,8 @@ namespace TradingAiAssist.Admin.WPF
     public partial class App : Application
     {
         private IHost? _host;
+        private INavigationService? _navigationService;
+        private MainWindowViewModel? _mainWindowViewModel;
 
         protected override async void OnStartup(StartupEventArgs e)
         {
@@ -45,6 +48,18 @@ namespace TradingAiAssist.Admin.WPF
 
                 // Start the host
                 await _host.StartAsync();
+
+                // Initialize services
+                _navigationService = new NavigationService();
+                
+                // Initialize main window view model
+                _mainWindowViewModel = new MainWindowViewModel(_navigationService);
+
+                // Set the data context for the main window
+                if (MainWindow is MainWindow mainWindow)
+                {
+                    mainWindow.DataContext = _mainWindowViewModel;
+                }
 
                 // Show main window
                 var mainWindow = _host.Services.GetRequiredService<MainWindow>();

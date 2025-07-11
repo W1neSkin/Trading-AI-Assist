@@ -3,13 +3,14 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using TradingAiAssist.Admin.Core.Models;
+using TradingAiAssist.Admin.WPF.Services;
 using System.Collections.Generic; // Added for EqualityComparer
 using System; // Added for DateTime
 using System.Threading.Tasks; // Added for Task
 
 namespace TradingAiAssist.Admin.WPF.ViewModels
 {
-    public class DashboardViewModel : INotifyPropertyChanged
+    public class DashboardViewModel : BaseViewModel
     {
         private DateTime _lastUpdated;
         private bool _isLoading;
@@ -246,23 +247,6 @@ namespace TradingAiAssist.Admin.WPF.ViewModels
         {
             // TODO: Implement navigation to settings view
         }
-
-        #region INotifyPropertyChanged
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
-
-        protected bool SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)
-        {
-            if (EqualityComparer<T>.Default.Equals(field, value)) return false;
-            field = value;
-            OnPropertyChanged(propertyName);
-            return true;
-        }
-        #endregion
     }
 
     public class KpiCardViewModel

@@ -19,15 +19,14 @@ namespace TradingAiAssist.Admin.WPF.Services
 
     public class NavigationService : INavigationService
     {
-        private readonly Dictionary<Type, Func<BaseViewModel>> _viewModelFactories;
+        private readonly IServiceProvider _serviceProvider;
         private readonly Stack<BaseViewModel> _navigationHistory;
         private BaseViewModel? _currentViewModel;
 
-        public NavigationService()
+        public NavigationService(IServiceProvider serviceProvider)
         {
-            _viewModelFactories = new Dictionary<Type, Func<BaseViewModel>>();
+            _serviceProvider = serviceProvider;
             _navigationHistory = new Stack<BaseViewModel>();
-            RegisterViewModels();
         }
 
         public event EventHandler<NavigationEventArgs>? NavigationChanged;
@@ -55,28 +54,23 @@ namespace TradingAiAssist.Admin.WPF.Services
 
         public void NavigateTo<T>(object? parameter) where T : BaseViewModel
         {
-            if (_viewModelFactories.TryGetValue(typeof(T), out var factory))
-            {
-                var viewModel = factory();
-                
-                // Store current view model in history if it exists
-                if (_currentViewModel != null)
-                {
-                    _navigationHistory.Push(_currentViewModel);
-                }
+            var viewModel = _serviceProvider.GetService(typeof(T)) as BaseViewModel;
+            if (viewModel == null)
+                throw new InvalidOperationException($"ViewModel of type {typeof(T).Name} is not registered in the DI container.");
 
-                // Set parameter if the view model supports it
-                if (viewModel is INavigationAware navigationAware)
-                {
-                    navigationAware.OnNavigatedTo(parameter);
-                }
-
-                CurrentViewModel = viewModel;
-            }
-            else
+            // Store current view model in history if it exists
+            if (_currentViewModel != null)
             {
-                throw new InvalidOperationException($"ViewModel of type {typeof(T).Name} is not registered.");
+                _navigationHistory.Push(_currentViewModel);
             }
+
+            // Set parameter if the view model supports it
+            if (viewModel is INavigationAware navigationAware)
+            {
+                navigationAware.OnNavigatedTo(parameter);
+            }
+
+            CurrentViewModel = viewModel;
         }
 
         public void GoBack()
@@ -84,12 +78,10 @@ namespace TradingAiAssist.Admin.WPF.Services
             if (CanGoBack)
             {
                 var previousViewModel = _navigationHistory.Pop();
-                
                 if (previousViewModel is INavigationAware navigationAware)
                 {
                     navigationAware.OnNavigatedTo(null);
                 }
-
                 CurrentViewModel = previousViewModel;
             }
         }
@@ -97,17 +89,6 @@ namespace TradingAiAssist.Admin.WPF.Services
         public void ClearHistory()
         {
             _navigationHistory.Clear();
-        }
-
-        private void RegisterViewModels()
-        {
-            // Register all view models with their factories
-            // These will be injected with their dependencies when the DI container is set up
-            _viewModelFactories[typeof(DashboardViewModel)] = () => new DashboardViewModel();
-            _viewModelFactories[typeof(UserManagementViewModel)] = () => new UserManagementViewModel(null!); // TODO: Inject service
-            _viewModelFactories[typeof(AiAnalyticsViewModel)] = () => new AiAnalyticsViewModel(null!); // TODO: Inject service
-            _viewModelFactories[typeof(SystemHealthViewModel)] = () => new SystemHealthViewModel(null!); // TODO: Inject service
-            _viewModelFactories[typeof(SettingsViewModel)] = () => new SettingsViewModel();
         }
 
         #region INotifyPropertyChanged

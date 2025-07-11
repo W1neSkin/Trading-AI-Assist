@@ -49,20 +49,13 @@ namespace TradingAiAssist.Admin.WPF
                 // Start the host
                 await _host.StartAsync();
 
-                // Initialize services
-                _navigationService = new NavigationService();
-                
-                // Initialize main window view model
-                _mainWindowViewModel = new MainWindowViewModel(_navigationService);
-
-                // Set the data context for the main window
-                if (MainWindow is MainWindow mainWindow)
-                {
-                    mainWindow.DataContext = _mainWindowViewModel;
-                }
+                // Get services from DI container
+                _navigationService = _host.Services.GetRequiredService<INavigationService>();
+                _mainWindowViewModel = _host.Services.GetRequiredService<MainWindowViewModel>();
 
                 // Show main window
                 var mainWindow = _host.Services.GetRequiredService<MainWindow>();
+                mainWindow.DataContext = _mainWindowViewModel;
                 mainWindow.Show();
 
                 Log.Information("Application started successfully");
@@ -120,6 +113,9 @@ namespace TradingAiAssist.Admin.WPF
             services.AddSingleton<IUserDataService, UserDataService>();
             services.AddSingleton<IAiAnalyticsDataService, AiAnalyticsDataService>();
             services.AddSingleton<ISystemHealthDataService, SystemHealthDataService>();
+
+            // Navigation Service
+            services.AddSingleton<INavigationService, NavigationService>();
 
             // Business Services
             services.AddSingleton<IUserManagementService, UserManagementService>();

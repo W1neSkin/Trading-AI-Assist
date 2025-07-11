@@ -6,10 +6,11 @@ using System.Windows;
 using System.Collections.Generic; // Added for EqualityComparer
 using System; // Added for Exception
 using System.Threading.Tasks; // Added for Task
+using TradingAiAssist.Admin.WPF.Services;
 
 namespace TradingAiAssist.Admin.WPF.ViewModels
 {
-    public class SettingsViewModel : INotifyPropertyChanged
+    public class SettingsViewModel : BaseViewModel
     {
         private string _currentCategory = "General";
         private bool _isGeneralVisible = true;

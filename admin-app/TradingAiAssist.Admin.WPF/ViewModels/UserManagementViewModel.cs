@@ -3,11 +3,15 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using TradingAiAssist.Admin.Core.Models;
-using TradingAiAssist.Admin.Core.Services;
+using TradingAiAssist.Admin.Core.Interfaces;
+using TradingAiAssist.Admin.WPF.Services;
+using System;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace TradingAiAssist.Admin.WPF.ViewModels
 {
-    public class UserManagementViewModel : INotifyPropertyChanged
+    public class UserManagementViewModel : BaseViewModel
     {
         private readonly IUserManagementService _userService;
         private string _searchTerm = "";

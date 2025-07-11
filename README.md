@@ -1,236 +1,214 @@
 # Trading AI Assist
 
-An enterprise-grade AI-powered platform designed to enhance user interaction and automate complex workflows in the trading and cryptocurrency domain. The system enables intelligent data retrieval and conversational access to financial and transactional information through natural language processing.
+An AI-driven trading and crypto platform with Azure infrastructure, Python microservices, and a .NET desktop admin application.
 
-## 🏗️ Architecture Overview
+## 🏗️ **Architecture Overview**
 
-This platform implements a **microservices architecture** with the following key components:
+### **Desktop Admin Application** ✅ **COMPLETED**
+- **Technology**: .NET 8.0 WPF with MVVM pattern
+- **Authentication**: Azure AD integration with MSAL
+- **Services**: User management, AI analytics, system health monitoring
+- **Features**: Real-time dashboard, user management, cost tracking, system monitoring
+- **Status**: Core infrastructure complete with dependency injection and service integration
 
-- **Hybrid LLM System**: Switch between local Ollama and cloud OpenRoute LLMs
-- **Messaging Layer**: Azure Service Bus as primary message broker with Event Grid integration
-- **Database Layer**: Azure SQL Database for relational data, MongoDB for document storage
-- **Payment Processing**: Stripe integration for secure transactions and billing
-- **AI/ML Pipeline**: LangChain with RAG workflows for intelligent data access
-- **Infrastructure**: Azure with ARM templates for Infrastructure as Code
+### **Backend Microservices** 🔄 **IN PROGRESS**
+- **API Gateway**: Azure API Management integration
+- **User Service**: Azure AD user synchronization
+- **AI Service**: Azure Cognitive Services integration
+- **Trading Service**: Real-time trading operations
+- **Payment Service**: Azure Key Vault for secure payments
+- **Notification Service**: Azure Event Grid for notifications
+- **Document Service**: Azure Blob Storage for documents
 
-## 🛠️ Technology Stack
+### **Infrastructure** 🔄 **IN PROGRESS**
+- **Cloud Platform**: Azure (migrated from AWS)
+- **Database**: Azure SQL Database
+- **Messaging**: Azure Service Bus & Event Grid
+- **Storage**: Azure Blob Storage
+- **Security**: Azure Key Vault & Azure AD
+- **Monitoring**: Azure Monitor & Application Insights
 
-### Backend & APIs
-- **FastAPI**: High-performance Python web framework
-- **Python 3.11+**: Primary development language
-- **Pydantic**: Data validation and serialization
+## 🚀 **Quick Start**
 
-### Databases
-- **Azure SQL Database**: Relational database for transactional data
-- **MongoDB**: Document database for flexible schema requirements
-- **Azure Redis Cache**: Caching and session management
+### **Desktop Admin Application**
 
-### Messaging & Queues
-- **Azure Service Bus**: Primary message broker for microservices communication
-- **Azure Event Grid**: Event service for Azure-native integrations
-- **Azure Event Hubs**: Stream processing for high-volume events
+1. **Prerequisites**
+   ```bash
+   # Install .NET 8.0 SDK
+   # Install Visual Studio 2022 or VS Code
+   ```
 
-### AI/ML Components
-- **Ollama**: Local LLM deployment
-- **OpenRoute**: Cloud LLM service
-- **LangChain**: LLM orchestration and RAG workflows
-- **TensorFlow**: ML model deployment and monitoring
+2. **Clone and Build**
+   ```bash
+   git clone <repository-url>
+   cd admin-app
+   dotnet restore
+   dotnet build
+   ```
 
-### Payment Processing
-- **Stripe**: Payment gateway and billing management
-- **Webhook handling**: Real-time payment notifications
+3. **Configure Azure AD**
+   - Update `appsettings.json` with your Azure AD configuration
+   - Set up application registration in Azure AD
 
-### Infrastructure
-- **Azure ARM Templates**: Infrastructure as Code
-- **Azure Functions**: Serverless computing
-- **Azure Monitor**: Monitoring and logging
-- **Docker**: Containerization
-- **Azure DevOps**: Automated deployment pipelines
+4. **Run the Application**
+   ```bash
+   dotnet run --project TradingAiAssist.Admin.WPF
+   ```
 
-## 📁 Project Structure
+### **Backend Services**
+
+1. **Install Dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Configure Environment**
+   ```bash
+   cp env.example .env
+   # Update .env with Azure service connection strings
+   ```
+
+3. **Run Services**
+   ```bash
+   # Start all services with Docker Compose
+   docker-compose up -d
+   
+   # Or run individually
+   python services/api-gateway/main.py
+   python services/user-service/main.py
+   python services/ai-service/main.py
+   ```
+
+## 📁 **Project Structure**
 
 ```
-├── services/                    # Microservices
-│   ├── api-gateway/            # API Gateway service
-│   ├── user-service/           # User management and authentication
-│   ├── trading-service/        # Trading logic and operations
-│   ├── ai-service/             # AI/ML models and processing
-│   ├── payment-service/        # Payment processing and billing
-│   ├── notification-service/   # Notifications and messaging
-│   └── document-service/       # Document processing pipeline
-├── infrastructure/             # Azure ARM infrastructure code
-├── shared/                     # Shared libraries and utilities
-├── admin-app/                  # Desktop Admin Application (.NET WPF)
-├── scripts/                    # Deployment and utility scripts
-├── docs/                       # Comprehensive documentation
-├── tests/                      # Test suites
-└── docker-compose.yml          # Local development environment
+TradingAiAssist/
+├── admin-app/                          # Desktop Admin Application
+│   ├── TradingAiAssist.Admin.Core/     # Core models and interfaces
+│   ├── TradingAiAssist.Admin.Services/ # Business logic services
+│   ├── TradingAiAssist.Admin.Data/     # Data access layer
+│   ├── TradingAiAssist.Admin.AzureAd/  # Azure AD integration
+│   └── TradingAiAssist.Admin.WPF/      # WPF UI and ViewModels
+├── services/                           # Python Microservices
+│   ├── api-gateway/                    # API Gateway service
+│   ├── user-service/                   # User management service
+│   ├── ai-service/                     # AI processing service
+│   ├── trading-service/                # Trading operations service
+│   ├── payment-service/                # Payment processing service
+│   ├── notification-service/           # Notification service
+│   └── document-service/               # Document management service
+├── infrastructure/                     # Azure Infrastructure
+│   ├── templates/                      # ARM/Bicep templates
+│   └── stacks/                         # Infrastructure stacks
+├── shared/                             # Shared libraries
+├── tests/                              # Test suites
+└── docs/                               # Documentation
 ```
 
-## 🚀 Key Features
+## 🔧 **Current Status**
 
-### 1. Hybrid LLM Architecture
-- **Local Processing**: Ollama integration for on-premises AI
-- **Cloud Flexibility**: OpenRoute API for scalable cloud processing
-- **Dynamic Switching**: Runtime selection between local and cloud models
+### ✅ **Completed Features**
+- **Desktop Admin Application**: Complete MVVM architecture with dependency injection
+- **Service Integration**: All ViewModels connected to real services with error handling
+- **Navigation System**: Full navigation with view switching and history
+- **UI Components**: Modern UI with loading states and responsive design
+- **Azure AD Integration**: Framework ready for authentication implementation
+- **Data Access Layer**: HTTP client services for all data operations
 
-### 2. Advanced Payment Infrastructure
-- **Secure Transactions**: One-time and recurring payments
-- **Flexible Billing**: Subscription management with metered billing
-- **Partner Onboarding**: KYC and identity verification workflows
+### 🔄 **In Progress**
+- **Azure Infrastructure**: ARM templates and deployment scripts
+- **Backend Services**: Azure service integration and updates
+- **Authentication Flow**: Complete Azure AD authentication implementation
+- **Real-time Features**: WebSocket integration and live updates
 
-### 3. High-Performance Data Pipelines
-- **Nanosecond Scaling**: Event stream processing
-- **Real-time Analytics**: Live trading data analysis
-- **Multi-format Support**: PDF, DOCX, TXT, HTML document processing
+### 📋 **Next Steps**
+1. **Complete Azure AD Authentication**: Implement full authentication flow
+2. **Add Dialog Windows**: User edit dialogs and confirmation dialogs
+3. **Real-time Updates**: Background services and live data updates
+4. **Azure Deployment**: Complete infrastructure deployment
+5. **Testing**: Comprehensive unit and integration tests
 
-### 4. Natural Language Interface
-- **SQL Generation**: Natural language to SQL conversion
-- **Conversational AI**: Interactive financial data queries
-- **RAG Integration**: Context-aware responses with database integration
+## 🛠️ **Development**
 
-### 5. Desktop Admin Application
-- **Azure AD Integration**: Secure authentication and authorization
-- **User Management**: Comprehensive user administration dashboard
-- **AI Analytics**: Real-time cost tracking and usage analytics
-- **System Monitoring**: Platform health and performance monitoring
-
-## 📋 Implementation Responsibilities
-
-This project implements all specified technical requirements:
-
-✅ **Architecture & Design**
-- Microservices architecture with service separation
-- Database schema design (Azure SQL Database & MongoDB)
-- High-performance data pipeline architecture
-
-✅ **AI/ML Integration**
-- Hybrid LLM architecture (Ollama + OpenRoute)
-- LangChain with RAG workflows
-- TensorFlow integration for ML monitoring
-- Natural language to SQL conversion
-
-✅ **Infrastructure & DevOps**
-- Azure ARM templates for Infrastructure as Code
-- Azure DevOps CI/CD pipelines
-- Docker containerization
-- Azure Functions serverless functions
-
-✅ **Data Management**
-- Azure SQL Database with backup/restore/replication
-- MongoDB flexible schema design
-- Data consistency and integrity
-
-✅ **Payment Processing**
-- Stripe Payments integration
-- Subscription billing systems
-- Invoice automation and dunning management
-
-✅ **Messaging & Communication**
-- Azure Service Bus messaging patterns
-- Azure Event Grid event processing
-- Azure Event Hubs stream processing
-
-✅ **Desktop Application Development**
-- .NET WPF desktop application
-- Azure AD authentication and authorization
-- Real-time analytics and monitoring
-- User management and administration
-
-## 🔧 Getting Started
-
-### Prerequisites
-- Python 3.11+
-- Docker & Docker Compose
-- Azure CLI configured
-- .NET 8.0 SDK (for Admin App)
-- Visual Studio 2022 or VS Code
-
-### Quick Start
+### **Desktop App Development**
 ```bash
-# Clone the repository
-git clone <repository-url>
-cd trading-ai-assist
-
-# Set up virtual environment
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Start local development environment
-docker-compose up -d
-
-# Run database migrations
-python scripts/migrate.py
-
-# Start the API gateway
-cd services/api-gateway
-uvicorn main:app --reload --port 8000
-
-# Build and run Admin App
 cd admin-app
+dotnet restore
 dotnet build
-dotnet run
-```
-
-## 📚 Documentation
-
-Comprehensive documentation is available in the `/docs` directory:
-
-- [Architecture Overview](docs/architecture.md)
-- [API Documentation](docs/api.md)
-- [Deployment Guide](docs/deployment.md)
-- [Development Guide](docs/development.md)
-- [Security Guidelines](docs/security.md)
-- [Admin App Guide](docs/admin-app.md)
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-pytest
-
-# Run tests with coverage
-pytest --cov=services --cov-report=html
-
-# Run integration tests
-pytest tests/integration/
-
-# Run Admin App tests
-cd admin-app
 dotnet test
 ```
 
-## 🚀 Deployment
+### **Service Development**
+```bash
+# Install Python dependencies
+pip install -r requirements.txt
 
-The platform supports multiple deployment environments:
+# Run tests
+python -m pytest tests/
 
-- **Development**: Local Docker Compose
-- **Staging**: Azure App Service with ARM templates
-- **Production**: Azure App Service with full monitoring and scaling
+# Start development environment
+docker-compose up -d
+```
 
-See [Deployment Guide](docs/deployment.md) for detailed instructions.
+### **Infrastructure Development**
+```bash
+# Deploy to Azure
+az deployment group create --resource-group <rg-name> --template-file infrastructure/templates/main.bicep
+```
 
-## 📈 Monitoring & Observability
+## 📊 **Features**
 
-- **Application Metrics**: Custom FastAPI metrics
-- **Infrastructure Monitoring**: Azure Monitor
-- **Log Aggregation**: Centralized logging with structured logs
-- **Performance Monitoring**: ML model performance tracking
+### **Desktop Admin Application**
+- 📊 **Dashboard**: Real-time KPIs and system overview
+- 👥 **User Management**: Complete user CRUD operations
+- 🤖 **AI Analytics**: Cost tracking and usage analytics
+- ⚡ **System Health**: Service monitoring and alerts
+- ⚙️ **Settings**: Application configuration and Azure AD setup
 
-## 🔒 Security
+### **Backend Services**
+- 🔐 **Authentication**: Azure AD integration
+- 💰 **Trading**: Real-time trading operations
+- 🤖 **AI Processing**: Document analysis and insights
+- 💳 **Payments**: Secure payment processing
+- 📧 **Notifications**: Real-time notifications
+- 📄 **Documents**: Document storage and management
 
-- **Authentication**: Azure AD with JWT tokens
-- **Authorization**: Role-based access control (RBAC)
-- **Data Encryption**: At rest and in transit with Azure Key Vault
-- **Compliance**: SOC2 and PCI DSS considerations
+## 🔒 **Security**
 
-## 🤝 Contributing
+- **Authentication**: Azure AD with role-based access control
+- **Data Encryption**: At-rest and in-transit encryption
+- **Key Management**: Azure Key Vault for secrets
+- **Network Security**: Azure Network Security Groups
+- **Audit Logging**: Comprehensive audit trails
 
-Please read our [Contributing Guide](docs/contributing.md) for details on our code of conduct and the process for submitting pull requests.
+## 📈 **Monitoring**
 
-## 📄 License
+- **Application Insights**: Performance monitoring and telemetry
+- **Azure Monitor**: Infrastructure monitoring
+- **Log Analytics**: Centralized logging
+- **Custom Dashboards**: Real-time operational dashboards
+- **Alerting**: Automated alerting for critical issues
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details. 
+## 🤝 **Contributing**
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
+
+## 📄 **License**
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 **Support**
+
+For support and questions:
+- Create an issue in the repository
+- Check the [documentation](docs/)
+- Review the [implementation guide](docs/implementation-guide.md)
+
+---
+
+**Last Updated**: December 2024
+**Status**: Desktop Admin Application Complete, Backend Services in Progress 

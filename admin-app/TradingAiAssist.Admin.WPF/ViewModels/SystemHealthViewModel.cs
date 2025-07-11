@@ -3,11 +3,16 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using TradingAiAssist.Admin.Core.Models;
-using TradingAiAssist.Admin.Core.Services;
+using TradingAiAssist.Admin.Core.Interfaces;
+using TradingAiAssist.Admin.WPF.Services;
+using System;
+using System.Threading.Tasks;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace TradingAiAssist.Admin.WPF.ViewModels
 {
-    public class SystemHealthViewModel : INotifyPropertyChanged
+    public class SystemHealthViewModel : BaseViewModel
     {
         private readonly ISystemHealthService _healthService;
         private DateTime _lastUpdated;

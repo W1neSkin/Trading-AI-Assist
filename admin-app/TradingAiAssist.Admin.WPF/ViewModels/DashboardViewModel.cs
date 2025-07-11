@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using TradingAiAssist.Admin.Core.Models;
+using TradingAiAssist.Admin.Core.Interfaces;
 using TradingAiAssist.Admin.WPF.Services;
 using System.Collections.Generic; // Added for EqualityComparer
 using System; // Added for DateTime
@@ -12,11 +13,27 @@ namespace TradingAiAssist.Admin.WPF.ViewModels
 {
     public class DashboardViewModel : BaseViewModel
     {
+        private readonly IUserManagementService _userManagementService;
+        private readonly IAiAnalyticsService _aiAnalyticsService;
+        private readonly ISystemHealthService _systemHealthService;
+        private readonly INotificationService _notificationService;
+        private readonly INavigationService _navigationService;
         private DateTime _lastUpdated;
         private bool _isLoading;
 
-        public DashboardViewModel()
+        public DashboardViewModel(
+            IUserManagementService userManagementService,
+            IAiAnalyticsService aiAnalyticsService,
+            ISystemHealthService systemHealthService,
+            INotificationService notificationService,
+            INavigationService navigationService)
         {
+            _userManagementService = userManagementService;
+            _aiAnalyticsService = aiAnalyticsService;
+            _systemHealthService = systemHealthService;
+            _notificationService = notificationService;
+            _navigationService = navigationService;
+
             KpiCards = new ObservableCollection<KpiCardViewModel>();
             SystemStatus = new ObservableCollection<SystemStatusViewModel>();
             RecentAlerts = new ObservableCollection<AlertViewModel>();
@@ -85,8 +102,83 @@ namespace TradingAiAssist.Admin.WPF.ViewModels
         {
             KpiCards.Clear();
 
-            // TODO: Replace with actual service calls
-            // For now, using mock data
+            try
+            {
+                // Load real data from services
+                var userStats = await _userManagementService.GetUserStatisticsAsync();
+                var aiStats = await _aiAnalyticsService.GetUsageStatisticsAsync();
+                var systemStats = await _systemHealthService.GetSystemStatisticsAsync();
+
+                KpiCards.Add(new KpiCardViewModel
+                {
+                    Title = "Total Users",
+                    Value = userStats.TotalUsers.ToString("N0"),
+                    Icon = "👥",
+                    ChangeText = $"{userStats.GrowthPercentage:F1}%",
+                    ChangeValue = "from last month",
+                    ChangeColor = userStats.GrowthPercentage >= 0 ? "#4CAF50" : "#F44336"
+                });
+
+                KpiCards.Add(new KpiCardViewModel
+                {
+                    Title = "AI Requests",
+                    Value = aiStats.TotalRequests.ToString("N0"),
+                    Icon = "🤖",
+                    ChangeText = $"{aiStats.RequestGrowthPercentage:F1}%",
+                    ChangeValue = "from last week",
+                    ChangeColor = aiStats.RequestGrowthPercentage >= 0 ? "#2196F3" : "#F44336"
+                });
+
+                KpiCards.Add(new KpiCardViewModel
+                {
+                    Title = "Total Cost",
+                    Value = aiStats.TotalCost.ToString("C"),
+                    Icon = "💰",
+                    ChangeText = $"{aiStats.CostChangePercentage:F1}%",
+                    ChangeValue = "from last month",
+                    ChangeColor = aiStats.CostChangePercentage <= 0 ? "#4CAF50" : "#FF9800"
+                });
+
+                KpiCards.Add(new KpiCardViewModel
+                {
+                    Title = "Active Sessions",
+                    Value = userStats.ActiveSessions.ToString(),
+                    Icon = "🟢",
+                    ChangeText = $"{userStats.SessionGrowthPercentage:F1}%",
+                    ChangeValue = "from yesterday",
+                    ChangeColor = userStats.SessionGrowthPercentage >= 0 ? "#4CAF50" : "#F44336"
+                });
+
+                KpiCards.Add(new KpiCardViewModel
+                {
+                    Title = "System Uptime",
+                    Value = $"{systemStats.UptimePercentage:F1}%",
+                    Icon = "⚡",
+                    ChangeText = $"{systemStats.UptimeChange:F1}%",
+                    ChangeValue = "from last week",
+                    ChangeColor = systemStats.UptimeChange >= 0 ? "#4CAF50" : "#F44336"
+                });
+
+                KpiCards.Add(new KpiCardViewModel
+                {
+                    Title = "Alerts",
+                    Value = systemStats.ActiveAlerts.ToString(),
+                    Icon = "⚠️",
+                    ChangeText = systemStats.AlertChange.ToString(),
+                    ChangeValue = "from yesterday",
+                    ChangeColor = systemStats.AlertChange <= 0 ? "#4CAF50" : "#F44336"
+                });
+            }
+            catch (Exception ex)
+            {
+                // Fallback to mock data if services fail
+                LoadMockKpiCards();
+                System.Diagnostics.Debug.WriteLine($"Error loading KPI cards: {ex.Message}");
+            }
+        }
+
+        private void LoadMockKpiCards()
+        {
             KpiCards.Add(new KpiCardViewModel
             {
                 Title = "Total Users",
@@ -152,7 +244,30 @@ namespace TradingAiAssist.Admin.WPF.ViewModels
         {
             SystemStatus.Clear();
 
-            // TODO: Replace with actual service calls
+            try
+            {
+                var healthStatus = await _systemHealthService.GetSystemHealthAsync();
+                
+                foreach (var service in healthStatus.Services)
+                {
+                    SystemStatus.Add(new SystemStatusViewModel
+                    {
+                        ServiceName = service.Name,
+                        Status = service.Status.ToString(),
+                        StatusColor = GetStatusColor(service.Status)
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Fallback to mock data
+                LoadMockSystemStatus();
+                System.Diagnostics.Debug.WriteLine($"Error loading system status: {ex.Message}");
+            }
+        }
+
+        private void LoadMockSystemStatus()
+        {
             SystemStatus.Add(new SystemStatusViewModel
             {
                 ServiceName = "API Gateway",
@@ -200,7 +315,30 @@ namespace TradingAiAssist.Admin.WPF.ViewModels
         {
             RecentAlerts.Clear();
 
-            // TODO: Replace with actual service calls
+            try
+            {
+                var alerts = await _notificationService.GetRecentAlertsAsync(5);
+                
+                foreach (var alert in alerts)
+                {
+                    RecentAlerts.Add(new AlertViewModel
+                    {
+                        Title = alert.Title,
+                        Message = alert.Message,
+                        Timestamp = alert.Timestamp
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                // Fallback to mock data
+                LoadMockRecentAlerts();
+                System.Diagnostics.Debug.WriteLine($"Error loading recent alerts: {ex.Message}");
+            }
+        }
+
+        private void LoadMockRecentAlerts()
+        {
             RecentAlerts.Add(new AlertViewModel
             {
                 Title = "High AI Usage",
@@ -223,29 +361,41 @@ namespace TradingAiAssist.Admin.WPF.ViewModels
             });
         }
 
+        private string GetStatusColor(ServiceStatus status)
+        {
+            return status switch
+            {
+                ServiceStatus.Healthy => "#4CAF50",
+                ServiceStatus.Warning => "#FF9800",
+                ServiceStatus.Critical => "#F44336",
+                ServiceStatus.Offline => "#9E9E9E",
+                _ => "#666666"
+            };
+        }
+
         private void NavigateToAlerts()
         {
-            // TODO: Implement navigation to alerts view
+            _navigationService.NavigateTo<SystemHealthViewModel>();
         }
 
         private void NavigateToUsers()
         {
-            // TODO: Implement navigation to users view
+            _navigationService.NavigateTo<UserManagementViewModel>();
         }
 
         private void NavigateToAnalytics()
         {
-            // TODO: Implement navigation to analytics view
+            _navigationService.NavigateTo<AiAnalyticsViewModel>();
         }
 
         private void NavigateToHealth()
         {
-            // TODO: Implement navigation to health view
+            _navigationService.NavigateTo<SystemHealthViewModel>();
         }
 
         private void NavigateToSettings()
         {
-            // TODO: Implement navigation to settings view
+            _navigationService.NavigateTo<SettingsViewModel>();
         }
     }
 

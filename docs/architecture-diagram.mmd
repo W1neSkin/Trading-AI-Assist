@@ -1,0 +1,199 @@
+graph TB
+    %% External Users and Interfaces
+    subgraph "External Users"
+        USER[👤 Trading Users]
+        ADMIN[👨‍💼 Admin Users]
+        API_CLIENT[🔌 API Clients]
+    end
+
+    %% Load Balancer and API Gateway
+    subgraph "Entry Point"
+        ALB[⚖️ Application Load Balancer<br/>AWS ALB]
+        GATEWAY[🚪 API Gateway Service<br/>Port 8000<br/>- Authentication<br/>- Rate Limiting<br/>- Routing]
+    end
+
+    %% Core Microservices
+    subgraph "Core Microservices"
+        USER_SVC[👥 User Service<br/>Port 8001<br/>- JWT Auth<br/>- RBAC<br/>- User Management]
+
+        TRADING_SVC[📈 Trading Service<br/>Port 8002<br/>- High-Performance Engine<br/>- Nanosecond Precision<br/>- Market Data Processing]
+
+        AI_SVC[🤖 AI Service<br/>Port 8003<br/>- Hybrid LLM<br/>- RAG System<br/>- NL2SQL]
+
+        PAYMENT_SVC[💳 Payment Service<br/>Port 8004<br/>- Stripe Integration<br/>- KYC Workflows<br/>- Subscriptions]
+
+        NOTIFICATION_SVC[📢 Notification Service<br/>Port 8005<br/>- Multi-Channel<br/>- Email/SMS/Push<br/>- In-App Notifications]
+
+        DOC_SVC[📄 Document Service<br/>Port 8006<br/>- PDF/DOCX Processing<br/>- OCR<br/>- Content Extraction]
+    end
+
+    %% Databases
+    subgraph "Database Layer"
+        POSTGRES[(🐘 PostgreSQL<br/>- User Data<br/>- Trading Records<br/>- Financial Transactions)]
+
+        MONGODB[(🍃 MongoDB<br/>- Documents<br/>- Embeddings<br/>- Search Index)]
+
+        REDIS[(⚡ Redis<br/>- Session Cache<br/>- Market Data Cache<br/>- Rate Limiting)]
+    end
+
+    %% Messaging Systems
+    subgraph "Messaging & Events"
+        RABBITMQ[🐰 RabbitMQ<br/>- Primary Message Broker<br/>- High-Performance Queues<br/>- Dead Letter Handling]
+
+        SQS[📨 AWS SQS<br/>- Dead Letter Queues<br/>- Event Processing<br/>- Async Tasks]
+
+        SNS[📡 AWS SNS<br/>- Push Notifications<br/>- SMS Messages<br/>- Event Broadcasting]
+    end
+
+    %% External AI Services
+    subgraph "AI/ML Infrastructure"
+        OLLAMA[🦙 Ollama<br/>Local LLM<br/>- Privacy-First<br/>- Cost Effective]
+
+        OPENROUTE[☁️ OpenRoute<br/>Cloud LLM<br/>- Advanced Models<br/>- Complex Queries]
+
+        TENSORFLOW[🧠 TensorFlow<br/>- Performance Monitoring<br/>- Anomaly Detection<br/>- Model Training]
+
+        FAISS[🔍 FAISS Vector Store<br/>- Similarity Search<br/>- RAG Embeddings<br/>- Fast Retrieval]
+    end
+
+    %% External Services
+    subgraph "External Integrations"
+        STRIPE[💰 Stripe<br/>- Payment Processing<br/>- KYC Verification<br/>- Subscription Billing]
+
+        MARKET_DATA[📊 Market Data Providers<br/>- Real-time Prices<br/>- Historical Data<br/>- Trading Signals]
+
+        EMAIL_PROVIDER[📧 Email Service<br/>SMTP/SendGrid<br/>- Transactional Emails<br/>- Marketing Campaigns]
+    end
+
+    %% AWS Infrastructure
+    subgraph "AWS Infrastructure"
+        subgraph "Compute"
+            ECS[🐳 ECS Fargate<br/>- Container Orchestration<br/>- Auto Scaling<br/>- Service Discovery]
+
+            LAMBDA[⚡ Lambda Functions<br/>- Event Processing<br/>- Background Tasks<br/>- Serverless Computing]
+        end
+
+        subgraph "Storage & Networking"
+            VPC[🌐 VPC<br/>- Network Isolation<br/>- Security Groups<br/>- Private Subnets]
+
+            S3[🪣 S3 Buckets<br/>- Document Storage<br/>- Static Assets<br/>- Backup Archives]
+
+            CLOUDWATCH[📊 CloudWatch<br/>- Metrics & Logging<br/>- Monitoring<br/>- Alerting]
+        end
+    end
+
+    %% CI/CD Pipeline
+    subgraph "DevOps & Deployment"
+        GITLAB[🦊 GitLab CI/CD<br/>- Automated Testing<br/>- Security Scanning<br/>- Blue-Green Deployment]
+
+        ECR[📦 ECR<br/>Container Registry<br/>- Docker Images<br/>- Version Management]
+
+        CDK[🏗️ AWS CDK<br/>Infrastructure as Code<br/>- Multi-Environment<br/>- Resource Management]
+    end
+
+    %% Monitoring & Security
+    subgraph "Monitoring & Security"
+        PROMETHEUS[📈 Prometheus<br/>- Metrics Collection<br/>- Performance Monitoring<br/>- Custom Metrics]
+
+        GRAFANA[📊 Grafana<br/>- Dashboards<br/>- Visualization<br/>- Alerting]
+
+        SECURITY[🔒 Security Layer<br/>- WAF<br/>- DDoS Protection<br/>- SSL/TLS]
+    end
+
+    %% User Flow
+    USER --> ALB
+    ADMIN --> ALB
+    API_CLIENT --> ALB
+    ALB --> GATEWAY
+
+    %% API Gateway Routes
+    GATEWAY --> USER_SVC
+    GATEWAY --> TRADING_SVC
+    GATEWAY --> AI_SVC
+    GATEWAY --> PAYMENT_SVC
+    GATEWAY --> NOTIFICATION_SVC
+    GATEWAY --> DOC_SVC
+
+    %% Service Dependencies
+    USER_SVC --> POSTGRES
+    USER_SVC --> REDIS
+    USER_SVC --> RABBITMQ
+
+    TRADING_SVC --> POSTGRES
+    TRADING_SVC --> REDIS
+    TRADING_SVC --> RABBITMQ
+    TRADING_SVC --> MARKET_DATA
+
+    AI_SVC --> MONGODB
+    AI_SVC --> OLLAMA
+    AI_SVC --> OPENROUTE
+    AI_SVC --> TENSORFLOW
+    AI_SVC --> FAISS
+    AI_SVC --> POSTGRES
+
+    PAYMENT_SVC --> POSTGRES
+    PAYMENT_SVC --> STRIPE
+    PAYMENT_SVC --> RABBITMQ
+
+    NOTIFICATION_SVC --> POSTGRES
+    NOTIFICATION_SVC --> MONGODB
+    NOTIFICATION_SVC --> SNS
+    NOTIFICATION_SVC --> EMAIL_PROVIDER
+    NOTIFICATION_SVC --> RABBITMQ
+
+    DOC_SVC --> MONGODB
+    DOC_SVC --> S3
+    DOC_SVC --> RABBITMQ
+
+    %% Messaging Flow
+    RABBITMQ --> SQS
+    SQS --> LAMBDA
+    LAMBDA --> SNS
+    LAMBDA --> NOTIFICATION_SVC
+
+    %% Infrastructure Connections
+    ECS --> USER_SVC
+    ECS --> TRADING_SVC
+    ECS --> AI_SVC
+    ECS --> PAYMENT_SVC
+    ECS --> NOTIFICATION_SVC
+    ECS --> DOC_SVC
+
+    %% Monitoring Connections
+    USER_SVC -.-> PROMETHEUS
+    TRADING_SVC -.-> PROMETHEUS
+    AI_SVC -.-> PROMETHEUS
+    PAYMENT_SVC -.-> PROMETHEUS
+    NOTIFICATION_SVC -.-> PROMETHEUS
+    DOC_SVC -.-> PROMETHEUS
+
+    PROMETHEUS --> GRAFANA
+    CLOUDWATCH --> GRAFANA
+
+    %% CI/CD Flow
+    GITLAB --> ECR
+    GITLAB --> CDK
+    CDK --> ECS
+    ECR --> ECS
+
+    %% Security Layer
+    SECURITY --> ALB
+    VPC --> ECS
+    VPC --> POSTGRES
+    VPC --> MONGODB
+    VPC --> REDIS
+
+    %% Styling
+    classDef serviceClass fill:#e1f5fe,stroke:#01579b,stroke-width:2px,color:#000000
+    classDef databaseClass fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000000
+    classDef messagingClass fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000000
+    classDef externalClass fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px,color:#000000
+    classDef infraClass fill:#fce4ec,stroke:#880e4f,stroke-width:2px,color:#000000
+    classDef aiClass fill:#e3f2fd,stroke:#0d47a1,stroke-width:2px,color:#000000
+
+    class USER_SVC,TRADING_SVC,AI_SVC,PAYMENT_SVC,NOTIFICATION_SVC,DOC_SVC,GATEWAY serviceClass
+    class POSTGRES,MONGODB,REDIS databaseClass
+    class RABBITMQ,SQS,SNS messagingClass
+    class STRIPE,MARKET_DATA,EMAIL_PROVIDER externalClass
+    class ECS,LAMBDA,VPC,S3,CLOUDWATCH,ALB,GITLAB,ECR,CDK infraClass
+    class OLLAMA,OPENROUTE,TENSORFLOW,FAISS aiClass

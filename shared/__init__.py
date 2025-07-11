@@ -1,0 +1,1 @@
+# Shared utilities and libraries for the AI Trading Platform 

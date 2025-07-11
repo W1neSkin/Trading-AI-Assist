@@ -39,7 +39,7 @@ namespace TradingAiAssist.Admin.Core.Models
 
     public class AiRequest
     {
-        public Guid Id { get; set; }
+        public string Id { get; set; } = "";
         public string UserId { get; set; } = string.Empty;
         public string Model { get; set; } = string.Empty;
         public string Provider { get; set; } = string.Empty; // Ollama or OpenRoute

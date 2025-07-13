@@ -1,0 +1,36 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appServicePlanName": {
+      "value": "tradingai-app-plan"
+    },
+    "apiGatewayAppName": {
+      "value": "tradingai-api-gateway"
+    },
+    "userServiceAppName": {
+      "value": "tradingai-user-service"
+    },
+    "aiServiceAppName": {
+      "value": "tradingai-ai-service"
+    },
+    "tradingServiceAppName": {
+      "value": "tradingai-trading-service"
+    },
+    "paymentServiceAppName": {
+      "value": "tradingai-payment-service"
+    },
+    "notificationServiceAppName": {
+      "value": "tradingai-notification-service"
+    },
+    "documentServiceAppName": {
+      "value": "tradingai-document-service"
+    },
+    "appServicePlanSku": {
+      "value": "B1"
+    },
+    "location": {
+      "value": "East US"
+    }
+  }
+} 

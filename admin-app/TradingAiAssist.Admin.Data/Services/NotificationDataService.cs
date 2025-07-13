@@ -10,17 +10,22 @@ namespace TradingAiAssist.Admin.Data.Services
     public class NotificationDataService : INotificationDataService
     {
         private readonly ILogger<NotificationDataService> _logger;
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ApiOptions _apiOptions;
 
         public NotificationDataService(
             ILogger<NotificationDataService> logger,
-            HttpClient httpClient,
+            IHttpClientFactory httpClientFactory,
             IOptions<ApiOptions> apiOptions)
         {
             _logger = logger;
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
             _apiOptions = apiOptions.Value;
+        }
+
+        private HttpClient CreateClient()
+        {
+            return _httpClientFactory.CreateClient("TradingAiAssistApi");
         }
 
         public async Task<List<Notification>> GetNotificationsAsync(string accessToken)
@@ -32,7 +37,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/notifications");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -60,7 +65,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/notifications/user/{userId}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -88,7 +93,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/notifications/unread");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -116,7 +121,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/notifications/{notificationId}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
                     _logger.LogWarning("Notification not found: {NotificationId}", notificationId);
@@ -149,7 +154,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Put, $"{_apiOptions.BaseUrl}/api/notifications/{notificationId}/read");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 _logger.LogInformation("Successfully marked notification as read: {NotificationId}", notificationId);
@@ -171,7 +176,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Put, $"{_apiOptions.BaseUrl}/api/notifications/read-all");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 _logger.LogInformation("Successfully marked all notifications as read");
@@ -193,7 +198,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Delete, $"{_apiOptions.BaseUrl}/api/notifications/{notificationId}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 _logger.LogInformation("Successfully deleted notification: {NotificationId}", notificationId);
@@ -221,7 +226,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 };
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 _logger.LogInformation("Successfully sent notification: {Title}", notification.Title);
@@ -250,7 +255,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 };
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 _logger.LogInformation("Successfully sent notification to all users: {Title}", title);
@@ -272,7 +277,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/notifications/unread-count");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -300,7 +305,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/notifications/unread-count/{userId}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();

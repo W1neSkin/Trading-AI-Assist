@@ -1,0 +1,192 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Base Card Style -->
+    <Style x:Key="BaseCard" TargetType="Border">
+        <Setter Property="Background" Value="{StaticResource SurfaceBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="16"/>
+        <Setter Property="Margin" Value="8"/>
+        <Setter Property="Effect">
+            <Setter.Value>
+                <DropShadowEffect Color="Black" 
+                                  Direction="270" 
+                                  ShadowDepth="2" 
+                                  Opacity="0.1" 
+                                  BlurRadius="8"/>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- KPI Card Style -->
+    <Style x:Key="KpiCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Padding" Value="20"/>
+        <Setter Property="MinHeight" Value="120"/>
+        <Setter Property="MinWidth" Value="200"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Effect">
+                    <Setter.Value>
+                        <DropShadowEffect Color="Black" 
+                                          Direction="270" 
+                                          ShadowDepth="4" 
+                                          Opacity="0.15" 
+                                          BlurRadius="12"/>
+                    </Setter.Value>
+                </Setter>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Info Card Style -->
+    <Style x:Key="InfoCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Background" Value="{StaticResource InfoLightBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource InfoBrush}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
+    <!-- Success Card Style -->
+    <Style x:Key="SuccessCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Background" Value="{StaticResource SuccessLightBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource SuccessBrush}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
+    <!-- Warning Card Style -->
+    <Style x:Key="WarningCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Background" Value="{StaticResource WarningLightBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
+    <!-- Error Card Style -->
+    <Style x:Key="ErrorCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Background" Value="{StaticResource ErrorLightBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}"/>
+        <Setter Property="BorderThickness" Value="2"/>
+    </Style>
+
+    <!-- Chart Card Style -->
+    <Style x:Key="ChartCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Padding" Value="20"/>
+        <Setter Property="MinHeight" Value="300"/>
+        <Setter Property="MinWidth" Value="400"/>
+    </Style>
+
+    <!-- Table Card Style -->
+    <Style x:Key="TableCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="MinHeight" Value="400"/>
+    </Style>
+
+    <!-- Form Card Style -->
+    <Style x:Key="FormCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Padding" Value="24"/>
+        <Setter Property="MinWidth" Value="500"/>
+        <Setter Property="MaxWidth" Value="800"/>
+    </Style>
+
+    <!-- Status Card Style -->
+    <Style x:Key="StatusCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Padding" Value="16"/>
+        <Setter Property="MinHeight" Value="80"/>
+        <Setter Property="MinWidth" Value="150"/>
+    </Style>
+
+    <!-- Notification Card Style -->
+    <Style x:Key="NotificationCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Padding" Value="16"/>
+        <Setter Property="Margin" Value="8,4"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="MinHeight" Value="60"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Alert Card Style -->
+    <Style x:Key="AlertCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Padding" Value="16"/>
+        <Setter Property="Margin" Value="8,4"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="BorderThickness" Value="2"/>
+        <Setter Property="MinHeight" Value="60"/>
+    </Style>
+
+    <!-- Alert Info Style -->
+    <Style x:Key="AlertInfo" TargetType="Border" BasedOn="{StaticResource AlertCard}">
+        <Setter Property="Background" Value="{StaticResource InfoLightBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource InfoBrush}"/>
+    </Style>
+
+    <!-- Alert Success Style -->
+    <Style x:Key="AlertSuccess" TargetType="Border" BasedOn="{StaticResource AlertCard}">
+        <Setter Property="Background" Value="{StaticResource SuccessLightBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource SuccessBrush}"/>
+    </Style>
+
+    <!-- Alert Warning Style -->
+    <Style x:Key="AlertWarning" TargetType="Border" BasedOn="{StaticResource AlertCard}">
+        <Setter Property="Background" Value="{StaticResource WarningLightBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource WarningBrush}"/>
+    </Style>
+
+    <!-- Alert Error Style -->
+    <Style x:Key="AlertError" TargetType="Border" BasedOn="{StaticResource AlertCard}">
+        <Setter Property="Background" Value="{StaticResource ErrorLightBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource ErrorBrush}"/>
+    </Style>
+
+    <!-- Metric Card Style -->
+    <Style x:Key="MetricCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Padding" Value="16"/>
+        <Setter Property="MinHeight" Value="100"/>
+        <Setter Property="MinWidth" Value="180"/>
+        <Setter Property="MaxWidth" Value="250"/>
+    </Style>
+
+    <!-- Dashboard Card Style -->
+    <Style x:Key="DashboardCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Padding" Value="20"/>
+        <Setter Property="MinHeight" Value="200"/>
+        <Setter Property="MinWidth" Value="300"/>
+    </Style>
+
+    <!-- Settings Card Style -->
+    <Style x:Key="SettingsCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Padding" Value="20"/>
+        <Setter Property="MinHeight" Value="150"/>
+        <Setter Property="MinWidth" Value="400"/>
+    </Style>
+
+    <!-- User Profile Card Style -->
+    <Style x:Key="UserProfileCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Padding" Value="24"/>
+        <Setter Property="MinHeight" Value="200"/>
+        <Setter Property="MinWidth" Value="350"/>
+    </Style>
+
+    <!-- Loading Card Style -->
+    <Style x:Key="LoadingCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}"/>
+        <Setter Property="Padding" Value="40"/>
+        <Setter Property="MinHeight" Value="200"/>
+    </Style>
+
+    <!-- Empty State Card Style -->
+    <Style x:Key="EmptyStateCard" TargetType="Border" BasedOn="{StaticResource BaseCard}">
+        <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
+        <Setter Property="BorderBrush" Value="{StaticResource DividerBrush}"/>
+        <Setter Property="Padding" Value="40"/>
+        <Setter Property="MinHeight" Value="200"/>
+        <Setter Property="HorizontalAlignment" Value="Center"/>
+        <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+
+</ResourceDictionary> 

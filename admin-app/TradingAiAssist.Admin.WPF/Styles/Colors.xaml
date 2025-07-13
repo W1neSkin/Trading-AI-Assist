@@ -1,0 +1,120 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Primary Colors -->
+    <Color x:Key="PrimaryColor">#0078D4</Color>
+    <Color x:Key="PrimaryLightColor">#106EBE</Color>
+    <Color x:Key="PrimaryDarkColor">#005A9E</Color>
+    
+    <!-- Secondary Colors -->
+    <Color x:Key="SecondaryColor">#107C10</Color>
+    <Color x:Key="SecondaryLightColor">#107C10</Color>
+    <Color x:Key="SecondaryDarkColor">#0B5A0B</Color>
+    
+    <!-- Accent Colors -->
+    <Color x:Key="AccentColor">#FF6B35</Color>
+    <Color x:Key="AccentLightColor">#FF8A65</Color>
+    <Color x:Key="AccentDarkColor">#E64A19</Color>
+    
+    <!-- Success Colors -->
+    <Color x:Key="SuccessColor">#4CAF50</Color>
+    <Color x:Key="SuccessLightColor">#81C784</Color>
+    <Color x:Key="SuccessDarkColor">#388E3C</Color>
+    
+    <!-- Warning Colors -->
+    <Color x:Key="WarningColor">#FF9800</Color>
+    <Color x:Key="WarningLightColor">#FFB74D</Color>
+    <Color x:Key="WarningDarkColor">#F57C00</Color>
+    
+    <!-- Error Colors -->
+    <Color x:Key="ErrorColor">#F44336</Color>
+    <Color x:Key="ErrorLightColor">#E57373</Color>
+    <Color x:Key="ErrorDarkColor">#D32F2F</Color>
+    
+    <!-- Info Colors -->
+    <Color x:Key="InfoColor">#2196F3</Color>
+    <Color x:Key="InfoLightColor">#64B5F6</Color>
+    <Color x:Key="InfoDarkColor">#1976D2</Color>
+    
+    <!-- Neutral Colors -->
+    <Color x:Key="BackgroundColor">#F5F5F5</Color>
+    <Color x:Key="SurfaceColor">#FFFFFF</Color>
+    <Color x:Key="BorderColor">#E0E0E0</Color>
+    <Color x:Key="DividerColor">#BDBDBD</Color>
+    
+    <!-- Text Colors -->
+    <Color x:Key="TextPrimaryColor">#212121</Color>
+    <Color x:Key="TextSecondaryColor">#757575</Color>
+    <Color x:Key="TextDisabledColor">#BDBDBD</Color>
+    <Color x:Key="TextInverseColor">#FFFFFF</Color>
+    
+    <!-- Status Colors -->
+    <Color x:Key="StatusOnlineColor">#4CAF50</Color>
+    <Color x:Key="StatusOfflineColor">#F44336</Color>
+    <Color x:Key="StatusWarningColor">#FF9800</Color>
+    <Color x:Key="StatusDegradedColor">#FF9800</Color>
+    
+    <!-- Chart Colors -->
+    <Color x:Key="ChartColor1">#2196F3</Color>
+    <Color x:Key="ChartColor2">#4CAF50</Color>
+    <Color x:Key="ChartColor3">#FF9800</Color>
+    <Color x:Key="ChartColor4">#9C27B0</Color>
+    <Color x:Key="ChartColor5">#F44336</Color>
+    <Color x:Key="ChartColor6">#00BCD4</Color>
+    <Color x:Key="ChartColor7">#795548</Color>
+    <Color x:Key="ChartColor8">#607D8B</Color>
+
+    <!-- Solid Color Brushes -->
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}"/>
+    <SolidColorBrush x:Key="PrimaryLightBrush" Color="{StaticResource PrimaryLightColor}"/>
+    <SolidColorBrush x:Key="PrimaryDarkBrush" Color="{StaticResource PrimaryDarkColor}"/>
+    
+    <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource SecondaryColor}"/>
+    <SolidColorBrush x:Key="SecondaryLightBrush" Color="{StaticResource SecondaryLightColor}"/>
+    <SolidColorBrush x:Key="SecondaryDarkBrush" Color="{StaticResource SecondaryDarkColor}"/>
+    
+    <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}"/>
+    <SolidColorBrush x:Key="AccentLightBrush" Color="{StaticResource AccentLightColor}"/>
+    <SolidColorBrush x:Key="AccentDarkBrush" Color="{StaticResource AccentDarkColor}"/>
+    
+    <SolidColorBrush x:Key="SuccessBrush" Color="{StaticResource SuccessColor}"/>
+    <SolidColorBrush x:Key="SuccessLightBrush" Color="{StaticResource SuccessLightColor}"/>
+    <SolidColorBrush x:Key="SuccessDarkBrush" Color="{StaticResource SuccessDarkColor}"/>
+    
+    <SolidColorBrush x:Key="WarningBrush" Color="{StaticResource WarningColor}"/>
+    <SolidColorBrush x:Key="WarningLightBrush" Color="{StaticResource WarningLightColor}"/>
+    <SolidColorBrush x:Key="WarningDarkBrush" Color="{StaticResource WarningDarkColor}"/>
+    
+    <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}"/>
+    <SolidColorBrush x:Key="ErrorLightBrush" Color="{StaticResource ErrorLightColor}"/>
+    <SolidColorBrush x:Key="ErrorDarkBrush" Color="{StaticResource ErrorDarkColor}"/>
+    
+    <SolidColorBrush x:Key="InfoBrush" Color="{StaticResource InfoColor}"/>
+    <SolidColorBrush x:Key="InfoLightBrush" Color="{StaticResource InfoLightColor}"/>
+    <SolidColorBrush x:Key="InfoDarkBrush" Color="{StaticResource InfoDarkColor}"/>
+    
+    <SolidColorBrush x:Key="BackgroundBrush" Color="{StaticResource BackgroundColor}"/>
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}"/>
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}"/>
+    <SolidColorBrush x:Key="DividerBrush" Color="{StaticResource DividerColor}"/>
+    
+    <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}"/>
+    <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}"/>
+    <SolidColorBrush x:Key="TextDisabledBrush" Color="{StaticResource TextDisabledColor}"/>
+    <SolidColorBrush x:Key="TextInverseBrush" Color="{StaticResource TextInverseColor}"/>
+    
+    <SolidColorBrush x:Key="StatusOnlineBrush" Color="{StaticResource StatusOnlineColor}"/>
+    <SolidColorBrush x:Key="StatusOfflineBrush" Color="{StaticResource StatusOfflineColor}"/>
+    <SolidColorBrush x:Key="StatusWarningBrush" Color="{StaticResource StatusWarningColor}"/>
+    <SolidColorBrush x:Key="StatusDegradedBrush" Color="{StaticResource StatusDegradedColor}"/>
+    
+    <SolidColorBrush x:Key="ChartBrush1" Color="{StaticResource ChartColor1}"/>
+    <SolidColorBrush x:Key="ChartBrush2" Color="{StaticResource ChartColor2}"/>
+    <SolidColorBrush x:Key="ChartBrush3" Color="{StaticResource ChartColor3}"/>
+    <SolidColorBrush x:Key="ChartBrush4" Color="{StaticResource ChartColor4}"/>
+    <SolidColorBrush x:Key="ChartBrush5" Color="{StaticResource ChartColor5}"/>
+    <SolidColorBrush x:Key="ChartBrush6" Color="{StaticResource ChartColor6}"/>
+    <SolidColorBrush x:Key="ChartBrush7" Color="{StaticResource ChartColor7}"/>
+    <SolidColorBrush x:Key="ChartBrush8" Color="{StaticResource ChartColor8}"/>
+
+</ResourceDictionary> 

@@ -10,17 +10,22 @@ namespace TradingAiAssist.Admin.Data.Services
     public class SystemHealthDataService : ISystemHealthDataService
     {
         private readonly ILogger<SystemHealthDataService> _logger;
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ApiOptions _apiOptions;
 
         public SystemHealthDataService(
             ILogger<SystemHealthDataService> logger,
-            HttpClient httpClient,
+            IHttpClientFactory httpClientFactory,
             IOptions<ApiOptions> apiOptions)
         {
             _logger = logger;
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
             _apiOptions = apiOptions.Value;
+        }
+
+        private HttpClient CreateClient()
+        {
+            return _httpClientFactory.CreateClient("TradingAiAssistApi");
         }
 
         public async Task<SystemHealthStatus> GetSystemHealthAsync(string accessToken)
@@ -32,7 +37,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/system-health");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -60,7 +65,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/system-health/services");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -89,7 +94,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/system-health/services/{encodedServiceName}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                 {
                     _logger.LogWarning("Service not found: {ServiceName}", serviceName);
@@ -124,7 +129,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/system-health/performance-metrics?startTime={startTimeStr}&endTime={endTimeStr}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -155,7 +160,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/system-health/performance-metrics/{encodedServiceName}?startTime={startTimeStr}&endTime={endTimeStr}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -183,7 +188,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/system-health/alerts/active");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -211,7 +216,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Post, $"{_apiOptions.BaseUrl}/api/system-health/alerts/{alertId}/acknowledge");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 _logger.LogInformation("Successfully acknowledged alert: {AlertId}", alertId);
@@ -233,7 +238,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Post, $"{_apiOptions.BaseUrl}/api/system-health/alerts/{alertId}/resolve");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 _logger.LogInformation("Successfully resolved alert: {AlertId}", alertId);
@@ -256,7 +261,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Post, $"{_apiOptions.BaseUrl}/api/system-health/services/{encodedServiceName}/restart");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 _logger.LogInformation("Successfully initiated restart for service: {ServiceName}", serviceName);
@@ -278,7 +283,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/system-health/resources");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();

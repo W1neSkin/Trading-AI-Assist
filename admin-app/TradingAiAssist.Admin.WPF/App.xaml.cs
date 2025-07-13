@@ -7,6 +7,7 @@ using TradingAiAssist.Admin.Core.Interfaces;
 using TradingAiAssist.Admin.Services;
 using TradingAiAssist.Admin.AzureAd.Services;
 using TradingAiAssist.Admin.Data.Services;
+using TradingAiAssist.Admin.Data.Configuration;
 using TradingAiAssist.Admin.WPF.ViewModels;
 using TradingAiAssist.Admin.WPF.Views;
 using TradingAiAssist.Admin.WPF.Services;
@@ -53,10 +54,11 @@ namespace TradingAiAssist.Admin.WPF
                 _navigationService = _host.Services.GetRequiredService<INavigationService>();
                 _mainWindowViewModel = _host.Services.GetRequiredService<MainWindowViewModel>();
 
-                // Show main window
-                var mainWindow = _host.Services.GetRequiredService<MainWindow>();
-                mainWindow.DataContext = _mainWindowViewModel;
-                mainWindow.Show();
+                // Show login window first
+                var loginViewModel = _host.Services.GetRequiredService<LoginViewModel>();
+                var loginWindow = _host.Services.GetRequiredService<LoginView>();
+                loginWindow.DataContext = loginViewModel;
+                loginWindow.Show();
 
                 Log.Information("Application started successfully");
             }
@@ -98,12 +100,17 @@ namespace TradingAiAssist.Admin.WPF
             // Configuration
             services.AddSingleton(configuration);
 
-            // HTTP Client
-            services.AddHttpClient("TradingAiAssistApi", client =>
+            // API Options
+            var apiOptions = new ApiOptions
             {
-                client.BaseAddress = new Uri(configuration["ApiSettings:BaseUrl"] ?? "https://localhost:8000/");
-                client.Timeout = TimeSpan.FromSeconds(30);
-            });
+                BaseUrl = configuration["ApiSettings:BaseUrl"] ?? "https://localhost:8000/",
+                TimeoutSeconds = int.TryParse(configuration["ApiSettings:TimeoutSeconds"], out var timeout) ? timeout : 30,
+                MaxRetries = int.TryParse(configuration["ApiSettings:MaxRetries"], out var retries) ? retries : 3
+            };
+            services.AddSingleton(apiOptions);
+
+            // HTTP Client with retry policies
+            services.AddHttpClientsWithRetry(apiOptions);
 
             // Azure AD Services
             services.AddSingleton<IAzureAdService, AzureAdService>();
@@ -113,6 +120,7 @@ namespace TradingAiAssist.Admin.WPF
             services.AddSingleton<IUserDataService, UserDataService>();
             services.AddSingleton<IAiAnalyticsDataService, AiAnalyticsDataService>();
             services.AddSingleton<ISystemHealthDataService, SystemHealthDataService>();
+            services.AddSingleton<INotificationDataService, NotificationDataService>();
 
             // Navigation Service
             services.AddSingleton<INavigationService, NavigationService>();
@@ -131,6 +139,8 @@ namespace TradingAiAssist.Admin.WPF
             services.AddTransient<AiAnalyticsViewModel>();
             services.AddTransient<SystemHealthViewModel>();
             services.AddTransient<SettingsViewModel>();
+            services.AddTransient<UserEditDialogViewModel>();
+            services.AddTransient<ConfirmationDialogViewModel>();
 
             // Views
             services.AddTransient<MainWindow>();
@@ -140,10 +150,15 @@ namespace TradingAiAssist.Admin.WPF
             services.AddTransient<AiAnalyticsView>();
             services.AddTransient<SystemHealthView>();
             services.AddTransient<SettingsView>();
+            services.AddTransient<UserEditDialog>();
+            services.AddTransient<ConfirmationDialog>();
 
             // Background Services
             services.AddHostedService<SystemHealthMonitorService>();
             services.AddHostedService<AiUsageMonitorService>();
+
+            // WebSocket Service
+            services.AddSingleton<WebSocketService>();
         }
     }
 } 

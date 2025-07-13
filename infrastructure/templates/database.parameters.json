@@ -1,0 +1,24 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sqlServerName": {
+      "value": "tradingai-sql-server"
+    },
+    "sqlAdminUsername": {
+      "value": "sqladmin"
+    },
+    "sqlAdminPassword": {
+      "value": "YourSecurePassword123!"
+    },
+    "sqlDatabaseName": {
+      "value": "TradingAIDatabase"
+    },
+    "sqlSkuName": {
+      "value": "S0"
+    },
+    "location": {
+      "value": "East US"
+    }
+  }
+} 

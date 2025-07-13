@@ -18,21 +18,25 @@ namespace TradingAiAssist.Admin.WPF.ViewModels
         private readonly ISystemHealthService _systemHealthService;
         private readonly INotificationService _notificationService;
         private readonly INavigationService _navigationService;
+        private readonly WebSocketService _webSocketService;
         private DateTime _lastUpdated;
         private bool _isLoading;
+        private bool _isRealTimeEnabled = true;
 
         public DashboardViewModel(
             IUserManagementService userManagementService,
             IAiAnalyticsService aiAnalyticsService,
             ISystemHealthService systemHealthService,
             INotificationService notificationService,
-            INavigationService navigationService)
+            INavigationService navigationService,
+            WebSocketService webSocketService)
         {
             _userManagementService = userManagementService;
             _aiAnalyticsService = aiAnalyticsService;
             _systemHealthService = systemHealthService;
             _notificationService = notificationService;
             _navigationService = navigationService;
+            _webSocketService = webSocketService;
 
             KpiCards = new ObservableCollection<KpiCardViewModel>();
             SystemStatus = new ObservableCollection<SystemStatusViewModel>();
@@ -47,6 +51,10 @@ namespace TradingAiAssist.Admin.WPF.ViewModels
 
             // Initialize dashboard
             _ = InitializeDashboardAsync();
+
+            // Setup WebSocket event handlers
+            SetupWebSocketHandlers();
+        }
         }
 
         public DateTime LastUpdated
@@ -396,6 +404,226 @@ namespace TradingAiAssist.Admin.WPF.ViewModels
         private void NavigateToSettings()
         {
             _navigationService.NavigateTo<SettingsViewModel>();
+        }
+
+        /// <summary>
+        /// Sets up WebSocket event handlers for real-time updates
+        /// </summary>
+        private void SetupWebSocketHandlers()
+        {
+            try
+            {
+                // Subscribe to WebSocket events
+                _webSocketService.SystemHealthUpdated += OnSystemHealthUpdated;
+                _webSocketService.AiUsageUpdated += OnAiUsageUpdated;
+                _webSocketService.NotificationReceived += OnNotificationReceived;
+                _webSocketService.ConnectionStatusChanged += OnConnectionStatusChanged;
+
+                // Connect to WebSocket server
+                _ = Task.Run(async () => await _webSocketService.ConnectAsync());
+
+                // Subscribe to update types
+                _ = Task.Run(async () => await _webSocketService.SubscribeToUpdatesAsync(
+                    "system_health", "ai_usage", "notification"));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error setting up WebSocket handlers: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Handles real-time system health updates
+        /// </summary>
+        private void OnSystemHealthUpdated(object? sender, SystemHealthStatus healthStatus)
+        {
+            try
+            {
+                // Update UI on the UI thread
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    UpdateSystemStatusFromWebSocket(healthStatus);
+                    LastUpdated = DateTime.Now;
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling system health update: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Handles real-time AI usage updates
+        /// </summary>
+        private void OnAiUsageUpdated(object? sender, AiUsageReport usageReport)
+        {
+            try
+            {
+                // Update UI on the UI thread
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    UpdateKpiCardsFromWebSocket(usageReport);
+                    LastUpdated = DateTime.Now;
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling AI usage update: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Handles real-time notification updates
+        /// </summary>
+        private void OnNotificationReceived(object? sender, Notification notification)
+        {
+            try
+            {
+                // Update UI on the UI thread
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    AddNotificationToAlerts(notification);
+                    LastUpdated = DateTime.Now;
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling notification update: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Handles WebSocket connection status changes
+        /// </summary>
+        private void OnConnectionStatusChanged(object? sender, string status)
+        {
+            try
+            {
+                System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                {
+                    // Update connection status in UI if needed
+                    System.Diagnostics.Debug.WriteLine($"WebSocket connection status: {status}");
+                });
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error handling connection status change: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Updates system status from WebSocket data
+        /// </summary>
+        private void UpdateSystemStatusFromWebSocket(SystemHealthStatus healthStatus)
+        {
+            if (!_isRealTimeEnabled) return;
+
+            try
+            {
+                SystemStatus.Clear();
+                
+                if (healthStatus.Services != null)
+                {
+                    foreach (var service in healthStatus.Services)
+                    {
+                        SystemStatus.Add(new SystemStatusViewModel
+                        {
+                            ServiceName = service.Name,
+                            Status = service.Status.ToString(),
+                            StatusColor = GetStatusColor(service.Status)
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating system status from WebSocket: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Updates KPI cards from WebSocket data
+        /// </summary>
+        private void UpdateKpiCardsFromWebSocket(AiUsageReport usageReport)
+        {
+            if (!_isRealTimeEnabled) return;
+
+            try
+            {
+                // Update AI-related KPI cards with real-time data
+                foreach (var card in KpiCards)
+                {
+                    if (card.Title == "AI Requests")
+                    {
+                        card.Value = usageReport.TotalRequests.ToString("N0");
+                    }
+                    else if (card.Title == "Total Cost")
+                    {
+                        card.Value = usageReport.TotalCost.ToString("C");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error updating KPI cards from WebSocket: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Adds a new notification to the alerts list
+        /// </summary>
+        private void AddNotificationToAlerts(Notification notification)
+        {
+            if (!_isRealTimeEnabled) return;
+
+            try
+            {
+                var alert = new AlertViewModel
+                {
+                    Title = notification.Title,
+                    Message = notification.Message,
+                    Timestamp = notification.CreatedAt
+                };
+
+                // Add to the beginning of the list
+                RecentAlerts.Insert(0, alert);
+
+                // Keep only the latest 10 alerts
+                while (RecentAlerts.Count > 10)
+                {
+                    RecentAlerts.RemoveAt(RecentAlerts.Count - 1);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error adding notification to alerts: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Enables or disables real-time updates
+        /// </summary>
+        public void SetRealTimeUpdates(bool enabled)
+        {
+            _isRealTimeEnabled = enabled;
+        }
+
+        /// <summary>
+        /// Cleanup WebSocket event handlers
+        /// </summary>
+        public void Cleanup()
+        {
+            try
+            {
+                _webSocketService.SystemHealthUpdated -= OnSystemHealthUpdated;
+                _webSocketService.AiUsageUpdated -= OnAiUsageUpdated;
+                _webSocketService.NotificationReceived -= OnNotificationReceived;
+                _webSocketService.ConnectionStatusChanged -= OnConnectionStatusChanged;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error cleaning up WebSocket handlers: {ex.Message}");
+            }
         }
     }
 

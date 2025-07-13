@@ -10,17 +10,22 @@ namespace TradingAiAssist.Admin.Data.Services
     public class AiAnalyticsDataService : IAiAnalyticsDataService
     {
         private readonly ILogger<AiAnalyticsDataService> _logger;
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ApiOptions _apiOptions;
 
         public AiAnalyticsDataService(
             ILogger<AiAnalyticsDataService> logger,
-            HttpClient httpClient,
+            IHttpClientFactory httpClientFactory,
             IOptions<ApiOptions> apiOptions)
         {
             _logger = logger;
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
             _apiOptions = apiOptions.Value;
+        }
+
+        private HttpClient CreateClient()
+        {
+            return _httpClientFactory.CreateClient("TradingAiAssistApi");
         }
 
         public async Task<AiUsageReport> GetUsageReportAsync(DateTime startDate, DateTime endDate, string accessToken)
@@ -34,7 +39,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/ai-analytics/usage-report?startDate={startDateStr}&endDate={endDateStr}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -65,7 +70,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/ai-analytics/daily-usage?startDate={startDateStr}&endDate={endDateStr}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -95,7 +100,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/ai-analytics/user-usage/{userId}?startDate={startDateStr}&endDate={endDateStr}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -126,7 +131,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/ai-analytics/service-usage/{encodedServiceName}?startDate={startDateStr}&endDate={endDateStr}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -156,7 +161,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/ai-analytics/total-cost?startDate={startDateStr}&endDate={endDateStr}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -186,7 +191,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/ai-analytics/user-cost/{userId}?startDate={startDateStr}&endDate={endDateStr}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -217,7 +222,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/ai-analytics/service-cost/{encodedServiceName}?startDate={startDateStr}&endDate={endDateStr}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -247,7 +252,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/ai-analytics/top-users?startDate={startDateStr}&endDate={endDateStr}&topCount={topCount}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -277,7 +282,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Get, $"{_apiOptions.BaseUrl}/api/ai-analytics/top-services?startDate={startDateStr}&endDate={endDateStr}&topCount={topCount}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 var json = await response.Content.ReadAsStringAsync();
@@ -312,7 +317,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 };
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 _logger.LogInformation("Successfully set cost alert for user {UserId}", userId);
@@ -334,7 +339,7 @@ namespace TradingAiAssist.Admin.Data.Services
                 var request = new HttpRequestMessage(HttpMethod.Delete, $"{_apiOptions.BaseUrl}/api/ai-analytics/cost-alerts/{userId}");
                 request.Headers.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-                var response = await _httpClient.SendAsync(request);
+                var response = await CreateClient().SendAsync(request);
                 response.EnsureSuccessStatusCode();
 
                 _logger.LogInformation("Successfully removed cost alert for user {UserId}", userId);

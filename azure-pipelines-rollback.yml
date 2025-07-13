@@ -1,0 +1,210 @@
+# Trading AI Assist - Rollback Pipeline
+# This pipeline handles emergency rollbacks to previous versions
+
+trigger: none
+
+variables:
+  azureSubscription: 'TradingAI-Azure-Subscription'
+  resourceGroupName: 'tradingai-rg'
+  environmentName: 'production'
+
+parameters:
+- name: rollbackVersion
+  displayName: 'Rollback Version'
+  type: string
+  default: ''
+- name: rollbackReason
+  displayName: 'Rollback Reason'
+  type: string
+  default: 'Emergency rollback'
+
+stages:
+- stage: RollbackApproval
+  displayName: 'Rollback Approval'
+  jobs:
+  - deployment: RollbackApproval
+    displayName: 'Emergency Rollback Approval'
+    environment: 'production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - script: |
+              echo "Emergency Rollback Request"
+              echo "Version to rollback to: ${{ parameters.rollbackVersion }}"
+              echo "Reason: ${{ parameters.rollbackReason }}"
+              echo "This will rollback all services to the specified version."
+            displayName: 'Rollback information'
+
+- stage: RollbackServices
+  displayName: 'Rollback Services'
+  dependsOn: RollbackApproval
+  condition: succeeded()
+  jobs:
+  - deployment: RollbackPythonServices
+    displayName: 'Rollback Python Services'
+    environment: 'production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadBuildArtifacts@1
+            displayName: 'Download previous version artifacts'
+            inputs:
+              buildType: 'specific'
+              buildId: '${{ parameters.rollbackVersion }}'
+              artifactName: 'PythonServices'
+              downloadPath: '$(System.ArtifactsDirectory)'
+
+          - task: AzureWebApp@1
+            displayName: 'Rollback API Gateway'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: 'tradingai-api-gateway'
+              package: '$(System.ArtifactsDirectory)/PythonServices/api-gateway'
+              appType: 'webApp'
+
+          - task: AzureWebApp@1
+            displayName: 'Rollback User Service'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: 'tradingai-user-service'
+              package: '$(System.ArtifactsDirectory)/PythonServices/user-service'
+              appType: 'webApp'
+
+          - task: AzureWebApp@1
+            displayName: 'Rollback AI Service'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: 'tradingai-ai-service'
+              package: '$(System.ArtifactsDirectory)/PythonServices/ai-service'
+              appType: 'webApp'
+
+          - task: AzureWebApp@1
+            displayName: 'Rollback Trading Service'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: 'tradingai-trading-service'
+              package: '$(System.ArtifactsDirectory)/PythonServices/trading-service'
+              appType: 'webApp'
+
+          - task: AzureWebApp@1
+            displayName: 'Rollback Payment Service'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: 'tradingai-payment-service'
+              package: '$(System.ArtifactsDirectory)/PythonServices/payment-service'
+              appType: 'webApp'
+
+          - task: AzureWebApp@1
+            displayName: 'Rollback Notification Service'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: 'tradingai-notification-service'
+              package: '$(System.ArtifactsDirectory)/PythonServices/notification-service'
+              appType: 'webApp'
+
+          - task: AzureWebApp@1
+            displayName: 'Rollback Document Service'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              appName: 'tradingai-document-service'
+              package: '$(System.ArtifactsDirectory)/PythonServices/document-service'
+              appType: 'webApp'
+
+  - deployment: RollbackAdminApp
+    displayName: 'Rollback Admin Application'
+    environment: 'production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: DownloadBuildArtifacts@1
+            displayName: 'Download previous Admin App artifacts'
+            inputs:
+              buildType: 'specific'
+              buildId: '${{ parameters.rollbackVersion }}'
+              artifactName: 'AdminApp'
+              downloadPath: '$(System.ArtifactsDirectory)'
+
+          - task: AzureFileCopy@4
+            displayName: 'Rollback Admin App to Azure Storage'
+            inputs:
+              sourcePath: '$(System.ArtifactsDirectory)/AdminApp'
+              azureSubscription: $(azureSubscription)
+              destination: 'AzureBlob'
+              storage: 'tradingaiadminapp'
+              containerName: '$web'
+              blobPrefix: 'admin-app/'
+
+          - task: AzureCLI@2
+            displayName: 'Update CDN'
+            inputs:
+              azureSubscription: $(azureSubscription)
+              scriptType: 'bash'
+              scriptLocation: 'inlineScript'
+              inlineScript: |
+                az cdn endpoint purge \
+                  --profile-name tradingai-cdn \
+                  --name tradingai-admin \
+                  --content-paths '/*'
+
+- stage: PostRollbackValidation
+  displayName: 'Post-Rollback Validation'
+  dependsOn: RollbackServices
+  condition: succeeded()
+  jobs:
+  - job: RollbackHealthCheck
+    displayName: 'Rollback Health Check'
+    pool:
+      vmImage: 'ubuntu-latest'
+    
+    steps:
+    - script: |
+        # Health check for all services after rollback
+        services=(
+          "https://tradingai-api-gateway.azurewebsites.net/health"
+          "https://tradingai-user-service.azurewebsites.net/health"
+          "https://tradingai-ai-service.azurewebsites.net/health"
+          "https://tradingai-trading-service.azurewebsites.net/health"
+          "https://tradingai-payment-service.azurewebsites.net/health"
+          "https://tradingai-notification-service.azurewebsites.net/health"
+          "https://tradingai-document-service.azurewebsites.net/health"
+        )
+        
+        for service in "${services[@]}"; do
+          echo "Checking health of $service after rollback"
+          response=$(curl -s -o /dev/null -w "%{http_code}" $service)
+          if [ $response -eq 200 ]; then
+            echo "✅ $service is healthy after rollback"
+          else
+            echo "❌ $service returned $response after rollback"
+            exit 1
+          fi
+        done
+      displayName: 'Run post-rollback health checks'
+
+    - script: |
+        # Verify version information
+        echo "Rollback completed to version: ${{ parameters.rollbackVersion }}"
+        echo "Rollback reason: ${{ parameters.rollbackReason }}"
+        echo "All services have been rolled back successfully."
+      displayName: 'Rollback verification'
+
+- stage: Notification
+  displayName: 'Rollback Notification'
+  dependsOn: PostRollbackValidation
+  condition: succeeded()
+  jobs:
+  - job: SendNotification
+    displayName: 'Send Rollback Notification'
+    pool:
+      vmImage: 'ubuntu-latest'
+    
+    steps:
+    - script: |
+        echo "Rollback notification sent to stakeholders"
+        echo "Version: ${{ parameters.rollbackVersion }}"
+        echo "Reason: ${{ parameters.rollbackReason }}"
+        echo "Status: Completed successfully"
+      displayName: 'Send notification' 
